@@ -1,21 +1,18 @@
 using UnityEngine;
 
 public class PlayerLogic : MonoBehaviour {
-    //[SerializeField] private int maxHealth = 100;
-    //private int health;
     private bool isAlive;
     [SerializeField] private int damage = 25;
-    [SerializeField] private LayerMask enemyLayers;
+    [SerializeField] private string enemyTag = "Enemy";
 
     private void Awake() {
-        //health = maxHealth;
         isAlive = true;
 
-        if (enemyLayers.value == 0) {
-            enemyLayers = LayerMask.GetMask("Enemy");
+        if (string.IsNullOrEmpty(enemyTag)) {
+            enemyTag = "Enemy";
         }
 
-        Debug.Log($"{name}: PlayerLogic Awake. Enemy mask value = {enemyLayers.value}");
+        Debug.Log($"{name}: PlayerLogic Awake. Enemy tag = {enemyTag}");
     }
     private void Update() {
         if (!isAlive) {
@@ -25,36 +22,35 @@ public class PlayerLogic : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision) {
         Debug.Log($"{name}: OnCollisionEnter with {collision.gameObject.name}");
-        TryDieFromLayer(collision.gameObject.layer);
+        TryDieFromTag(collision.gameObject.tag);
     }
 
     private void OnTriggerEnter(Collider other) {
         Debug.Log($"{name}: OnTriggerEnter with {other.gameObject.name}");
-        TryDieFromLayer(other.gameObject.layer);
+        TryDieFromTag(other.gameObject.tag);
     }
 
     private void OnCollisionEnter2D(Collision2D collision) {
         Debug.Log($"{name}: OnCollisionEnter2D with {collision.gameObject.name}");
-        TryDieFromLayer(collision.gameObject.layer);
+        TryDieFromTag(collision.gameObject.tag);
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
         Debug.Log($"{name}: OnTriggerEnter2D with {other.gameObject.name}");
-        TryDieFromLayer(other.gameObject.layer);
+        TryDieFromTag(other.gameObject.tag);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit) {
         Debug.Log($"{name}: OnControllerColliderHit with {hit.gameObject.name}");
-        TryDieFromLayer(hit.gameObject.layer);
+        TryDieFromTag(hit.gameObject.tag);
     }
 
-    private void TryDieFromLayer(int layer) {
+    private void TryDieFromTag(string tag) {
         if (!isAlive) {
             return;
         }
 
-        int layerBit = 1 << layer;
-        if ((enemyLayers.value & layerBit) != 0) {
+        if (tag == enemyTag) {
             isAlive = false;
             Debug.Log("Player has died.");
         }

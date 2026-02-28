@@ -9,8 +9,6 @@ public class EnemyLogic : MonoBehaviour
     {
         health = maxHealth;
     }
-
-    // Update is called once per frame
     void Update()
     {
         
