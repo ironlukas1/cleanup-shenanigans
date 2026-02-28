@@ -1,4 +1,4 @@
-using UnityEngine;
+/*using UnityEngine;
 
 public class PlayerLogic : MonoBehaviour {
     private bool isAlive;
@@ -55,4 +55,4 @@ public class PlayerLogic : MonoBehaviour {
             Debug.Log("Player has died.");
         }
     }
-}
+}*/
