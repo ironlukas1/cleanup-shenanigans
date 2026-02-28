@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 
 public class PlayerLogic : MonoBehaviour {
     private bool isAlive;
@@ -19,30 +19,9 @@ public class PlayerLogic : MonoBehaviour {
             Debug.Log("Player is dead.");
         }
     }
-
     private void OnCollisionEnter(Collision collision) {
         Debug.Log($"{name}: OnCollisionEnter with {collision.gameObject.name}");
         TryDieFromTag(collision.gameObject.tag);
-    }
-
-    private void OnTriggerEnter(Collider other) {
-        Debug.Log($"{name}: OnTriggerEnter with {other.gameObject.name}");
-        TryDieFromTag(other.gameObject.tag);
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision) {
-        Debug.Log($"{name}: OnCollisionEnter2D with {collision.gameObject.name}");
-        TryDieFromTag(collision.gameObject.tag);
-    }
-
-    private void OnTriggerEnter2D(Collider2D other) {
-        Debug.Log($"{name}: OnTriggerEnter2D with {other.gameObject.name}");
-        TryDieFromTag(other.gameObject.tag);
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit) {
-        Debug.Log($"{name}: OnControllerColliderHit with {hit.gameObject.name}");
-        TryDieFromTag(hit.gameObject.tag);
     }
 
     private void TryDieFromTag(string tag) {
@@ -55,4 +34,4 @@ public class PlayerLogic : MonoBehaviour {
             Debug.Log("Player has died.");
         }
     }
-}*/
+}

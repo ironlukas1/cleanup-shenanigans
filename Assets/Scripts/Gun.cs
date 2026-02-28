@@ -1,16 +1,12 @@
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using TMPro;
 
 public class Gun : MonoBehaviour
 {
-    //bullet
-    public GameObject bullet;
-
+    public float bulletScale = 0.2f;
     //bullet force
     public float shootForce;
 
-    //gun stats
+    //gun stats (spread is in degrees)
     public float timeBetweenShooting, spread, timeBetweenShots;
     public int bulletsPerTap;
     public bool allowButtonHold;
@@ -51,26 +47,29 @@ public class Gun : MonoBehaviour
 
         RaycastHit hit;
         Vector3 targetPoint;
-        if(Physics.Raycast(transform.position, transform.forward, out hit))
+        Ray ray = fpsCam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
+        if (Physics.Raycast(ray, out hit))
         {
             targetPoint = hit.point;
         }
         else
         {
-            targetPoint = transform.position + transform.forward * 100f;
+            targetPoint = ray.GetPoint(100f);
         }
         Debug.Log($"Target point: {targetPoint}");
         
-        Vector3 directionWithoutSpread = targetPoint - attackPoint.position;
+        Vector3 directionWithoutSpread = (targetPoint - attackPoint.position).normalized;
 
-        float x = Random.Range(-spread, spread);
-        float y = Random.Range(-spread, spread);
-        
-        Vector3 directionWithSpread = directionWithoutSpread + new Vector3(x, y, 0);
+        float spreadX = Random.Range(-spread, spread);
+        float spreadY = Random.Range(-spread, spread);
+
+        Quaternion spreadRotation = Quaternion.Euler(spreadY, spreadX, 0f);
+        Vector3 directionWithSpread = spreadRotation * directionWithoutSpread;
         Debug.Log($"Direction with spread: {directionWithSpread}");
 
-        GameObject currentBullet = Instantiate(bullet, attackPoint.position, Quaternion.identity);
-        currentBullet.transform.forward = directionWithSpread.normalized;
+        // Create bullet programmatically
+        GameObject currentBullet = CreateBullet(attackPoint.position, directionWithSpread.normalized);
+        
         Debug.Log($"Bullet direction: {currentBullet.transform.forward}");
         Debug.Log($"With spread normalized: {directionWithSpread.normalized}");
 
@@ -94,6 +93,37 @@ public class Gun : MonoBehaviour
     {
         readyToShoot = true;
         allowInvoke = true;
+    }
+
+    private GameObject CreateBullet(Vector3 position, Vector3 direction)
+    {
+        // Create bullet GameObject
+        GameObject bulletObj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        bulletObj.name = "Bullet";
+        bulletObj.transform.position = position;
+        bulletObj.transform.forward = direction;
+        bulletObj.transform.localScale = Vector3.one * bulletScale;
+
+        Collider bulletCollider = bulletObj.GetComponent<Collider>();
+        if (bulletCollider != null)
+        {
+            bulletCollider.isTrigger = true;
+        }
+
+        // Add Rigidbody
+        Rigidbody rb = bulletObj.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = bulletObj.AddComponent<Rigidbody>();
+        }
+        rb.mass = 1f;
+        rb.useGravity = false;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+
+        // Add Bullet script for collision and lifetime management
+        bulletObj.AddComponent<Bullet>();
+
+        return bulletObj;
     }
 
 }
