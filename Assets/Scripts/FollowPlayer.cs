@@ -4,7 +4,7 @@ public class FollowPlayer : MonoBehaviour
 {
     [SerializeField] private Transform player;
     [SerializeField] private float followSpeed = 20f;
-    [SerializeField] private float stoppingDistance = 3f;
+    [SerializeField] private float stoppingDistance = 0f;
     private Rigidbody rb;
 
     void Start()

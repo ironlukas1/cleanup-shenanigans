@@ -3,6 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float lifetime = 5f;
+    public int shotId;
     private float ignoreCollisionTime = 0.1f; // Ignore collisions for first 0.1 seconds
     private float spawnTime;
 
@@ -20,6 +21,10 @@ public class Bullet : MonoBehaviour
         {
             return;
         }
+
+        EnemyLogic enemy = other.GetComponent<EnemyLogic>();
+        if (enemy != null)
+            enemy.TakeDamage(50, shotId);
 
         // Destroy the bullet when it collides with anything
         Destroy(gameObject);

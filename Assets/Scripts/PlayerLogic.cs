@@ -1,37 +1,40 @@
 using UnityEngine;
 
 public class PlayerLogic : MonoBehaviour {
-    private bool isAlive;
-    [SerializeField] private int damage = 25;
+    public bool IsAlive { get; private set; }
     [SerializeField] private string enemyTag = "Enemy";
 
     private void Awake() {
-        isAlive = true;
+        IsAlive = true;
 
         if (string.IsNullOrEmpty(enemyTag)) {
             enemyTag = "Enemy";
         }
+    }
 
-        Debug.Log($"{name}: PlayerLogic Awake. Enemy tag = {enemyTag}");
-    }
-    private void Update() {
-        if (!isAlive) {
-            Debug.Log("Player is dead.");
-        }
-    }
     private void OnCollisionEnter(Collision collision) {
-        Debug.Log($"{name}: OnCollisionEnter with {collision.gameObject.name}");
-        TryDieFromTag(collision.gameObject.tag);
+        if (collision.gameObject.CompareTag(enemyTag))
+            Die();
     }
 
-    private void TryDieFromTag(string tag) {
-        if (!isAlive) {
-            return;
-        }
+    private void Die() {
+        if (!IsAlive) return;
+        IsAlive = false;
 
-        if (tag == enemyTag) {
-            isAlive = false;
-            Debug.Log("Player has died.");
-        }
+        // Disable player controls
+        var movement = GetComponent<PlayerMovement>();
+        if (movement != null) movement.enabled = false;
+
+        var cam = GetComponentInChildren<CameraMovement>();
+        if (cam != null) cam.enabled = false;
+
+        var weapon = GetComponent<PlayerWeaponManager>();
+        if (weapon != null) weapon.enabled = false;
+
+        var gun = GetComponentInChildren<Gun>();
+        if (gun != null) gun.enabled = false;
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayerDied();
     }
 }

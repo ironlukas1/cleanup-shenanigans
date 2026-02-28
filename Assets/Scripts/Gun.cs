@@ -15,6 +15,7 @@ public class Gun : MonoBehaviour
     //reference
     public Camera fpsCam;
     public Transform attackPoint;
+    private PlayerWeaponManager weaponManager;
 
     //other
     bool shooting, readyToShoot;
@@ -22,7 +23,8 @@ public class Gun : MonoBehaviour
 
     private void Awake()
     {
-       readyToShoot = true; 
+       readyToShoot = true;
+       weaponManager = GetComponentInParent<PlayerWeaponManager>();
     }
 
     private void Update()
@@ -31,12 +33,17 @@ public class Gun : MonoBehaviour
     }
     private void MyInput()
     {
+        if (weaponManager != null && (weaponManager.CurrentMode != WeaponMode.Shotgun || weaponManager.CurrentAmmo <= 0))
+            return;
+
         if(allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
         else shooting = Input.GetKeyDown(KeyCode.Mouse0);
 
         if (readyToShoot && shooting)
         {
             bulletsShot = 0;
+            if (weaponManager != null && !weaponManager.ConsumeAmmo())
+                return;
             Shoot();
         }
     }
@@ -121,7 +128,9 @@ public class Gun : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         // Add Bullet script for collision and lifetime management
-        bulletObj.AddComponent<Bullet>();
+        Bullet bullet = bulletObj.AddComponent<Bullet>();
+        if (weaponManager != null)
+            bullet.shotId = weaponManager.CurrentShotId;
 
         return bulletObj;
     }
